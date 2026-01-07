@@ -323,9 +323,10 @@ fi
 group "Set up user $SUDO_USER"
 
 cat > .setup.sh <<-SHELL
-	echo '▷ Creating user $SUDO_USER with uid ${SUDO_UID:-1000}'
-	adduser -u '${SUDO_UID:-1000}' -G users -s /bin/sh -D '$SUDO_USER'
-
+	if ! id $SUDO_USER >/dev/null 2>&1; then
+		echo '▷ Creating user $SUDO_USER with uid ${SUDO_UID:-1000}'
+		adduser -u '${SUDO_UID:-1000}' -G users -s /bin/sh -D '$SUDO_USER'
+	fi
 	if [ -d /etc/sudoers.d ]; then
 		echo '▷ Adding sudo rule:'
 		echo '$SUDO_USER ALL=(ALL) NOPASSWD: ALL' | tee /etc/sudoers.d/root
