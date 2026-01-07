@@ -285,6 +285,7 @@ mount_bind /dev dev
 mount_bind /sys sys
 mount_bind "$RUNNER_HOME/work" "${RUNNER_HOME#/}/work"
 
+
 # Some systems (Ubuntu?) symlinks /dev/shm to /run/shm.
 if [ -L /dev/shm ] && [ -d /run/shm ]; then
 	mount_bind /run/shm run/shm
@@ -298,6 +299,11 @@ for vol in $INPUT_VOLUMES; do
 	mount_bind "$src" "${dst#/}"
 done
 
+# If we are running inside of `act`, then we need to mount
+# all of the action scripts.
+if [ -d /var/run/act ]; then
+	mount_bind /var/run/act var/run/act
+fi
 
 #-----------------------------------------------------------------------
 group 'Copy action scripts'
